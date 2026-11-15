@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Figtree:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>Contrate seu evento | M&amp;M Doce Estouro</title>
+<meta name="theme-color" content="#fff0f5">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="logo" href="index.html"><i></i>M&amp;M Doce Estouro</a>
+  <nav aria-label="Principal">
+    <a href="index.html">Início</a>
+    <a href="index3.html">Cardápio</a>
+    <a href="index2.html" class="on">Contrate seu evento</a>
+    <a href="#contato">Contato</a>
+  </nav>
+  <div class="hr"><a class="cart" href="#" id="cart">Carrinho (0)</a><button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false"><i></i></button></div>
+</header>
+<main>
+  <section class="hero">
+    <div>
+      <h1>Seu evento com cara de festa.</h1>
+      <p>Mesa de doces, pipoca e algodão doce para aniversários, casamentos e eventos de empresa. Conte o que você precisa e respondemos pelo WhatsApp.</p>
+      <div class="btns"><a class="btn pk" href="#orcamento">Pedir orçamento</a></div>
+    </div>
+    <div class="box" aria-hidden="true"><span class="tag">Pipoca &amp; algodão</span>
+      <b style="background:#fff1d6"></b><b style="background:#ffa6c4"></b><b style="background:#bfe3a0"></b>
+      <b style="background:#ffa6c4"></b><b style="background:#ffd45e"></b><b style="background:#fff1d6"></b>
+      <b style="background:#bfe3a0"></b><b style="background:#fff1d6"></b><b style="background:#ff6fa3"></b></div>
+  </section>
+  <section class="sec">
+    <h2>Como funciona</h2><p class="sub">Do primeiro contato até a festa.</p>
+    <div class="steps">
+      <div><h3>Conte sobre a festa</h3><p>Data, local e número de convidados.</p></div>
+      <div><h3>Receba o orçamento</h3><p>Respondemos pelo WhatsApp com valores e opções.</p></div>
+      <div><h3>Aproveite</h3><p>Levamos tudo pronto e montado no seu evento.</p></div>
+    </div>
+  </section>
+  <section class="sec" id="orcamento">
+    <h2>Peça seu orçamento</h2><p class="sub">Preencha e envie direto para o nosso WhatsApp.</p>
+    <div class="form">
+      <div><label for="nome">Seu nome</label><input id="nome" autocomplete="name"></div>
+      <div><label for="data">Data do evento</label><input id="data" type="date"></div>
+      <div><label for="tipo">Tipo de evento</label><select id="tipo"><option>Aniversário</option><option>Casamento</option><option>Evento de empresa</option><option>Outro</option></select></div>
+      <div><label for="conv">Número de convidados</label><input id="conv" type="number" min="1" inputmode="numeric"></div>
+      <div class="full"><label>O que você quer contratar?</label>
+        <div class="chk" id="serv"><label><input type="checkbox" value="Doces"> Doces</label><label><input type="checkbox" value="Pipoca"> Pipoca</label><label><input type="checkbox" value="Algodão doce"> Algodão doce</label></div></div>
+      <div class="full"><a class="btn pk" id="send" href="#" target="_blank" rel="noopener">Enviar pelo WhatsApp</a></div>
+    </div>
+  </section>
+</main>
+</div>
+<footer id="contato"><div class="wrap">
+  <span>© 2026 M&amp;M Doce Estouro</span>
+  <span>WhatsApp <a href="https://wa.me/5511910088330">(11) 91008-8330</a> · Taboão da Serra, SP</span>
+</div></footer>
+<script src="app.js"></script>
+<script>
+var $=function(i){return document.getElementById(i)};
+$('send').onclick=function(){
+  var s=[].map.call(document.querySelectorAll('#serv input:checked'),function(i){return i.value}).join(', ')||'a combinar';
+  var t='Olá! Meu nome é '+($('nome').value||'(nome)')+' e gostaria de um orçamento para '+$('tipo').value+
+   '.\nData: '+($('data').value||'a definir')+'\nConvidados: '+($('conv').value||'a definir')+'\nServiços: '+s;
+  this.href='https://wa.me/5511910088330?text='+encodeURIComponent(t);
+};
+</script>
+</body>
+</html>

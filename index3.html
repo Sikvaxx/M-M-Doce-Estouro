@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Figtree:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<title>Cardápio | M&amp;M Doce Estouro</title>
+<meta name="theme-color" content="#fff0f5">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="logo" href="index.html"><i></i>M&amp;M Doce Estouro</a>
+  <nav aria-label="Principal">
+    <a href="index.html">Início</a>
+    <a href="index3.html" class="on">Cardápio</a>
+    <a href="index2.html">Contrate seu evento</a>
+    <a href="#contato">Contato</a>
+  </nav>
+  <div class="hr"><a class="cart" href="#" id="cart">Carrinho (0)</a><button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false"><i></i></button></div>
+</header>
+<section class="top"><h1>Cardápio</h1><p>Tudo é feito no dia. Escolha seus doces e monte o pedido.</p></section>
+<div class="bar"><div class="tabs" id="tabs" role="group" aria-label="Categorias"></div></div>
+<main id="menu"></main>
+</div>
+
+<div class="ov" id="ov"></div>
+<aside class="drawer" id="drawer" aria-label="Carrinho">
+  <div class="dh"><h2>Seu carrinho</h2><button class="x" id="close" aria-label="Fechar carrinho">&#10005;</button></div>
+  <div class="lines" id="lines"></div>
+  <div class="foot" id="foot">
+    <div class="opts">
+      <button class="tab" id="mRet">Retirada</button>
+      <button class="tab" id="mEnt">Entrega (+ R$ 8,00)</button>
+    </div>
+    <div class="opts" id="pays" role="group" aria-label="Forma de pagamento">
+      <button class="tab" id="pPix" type="button">Pix</button>
+      <button class="tab" id="pLoc" type="button">Pagar na hora</button>
+    </div>
+    <div class="pix" id="pix">
+      <span>Pague com Pix</span>
+      <div class="qr" id="qr"></div>
+      <b id="pixVal"></b>
+      <button class="copy" id="copy" type="button">Copiar código Pix (copia e cola)</button>
+      <small>Ou use a chave de telefone <b id="pixKey"></b>. Depois de pagar, envie o comprovante pelo WhatsApp.</small>
+    </div>
+    <input id="cname" type="text" placeholder="Seu nome" autocomplete="name">
+    <div class="sr"><span>Subtotal</span><span id="sSub"></span></div>
+    <div class="sr"><span>Entrega</span><span id="sFee"></span></div>
+    <div class="sr big"><span>Total</span><span id="sTot"></span></div>
+    <a class="go" id="go" target="_blank" rel="noopener">Enviar pedido pelo WhatsApp</a>
+  </div>
+</aside>
+
+<div class="total" id="total" role="status">
+  <span id="totalText"></span>
+  <button id="order">Finalizar pedido</button>
+</div>
+
+<footer id="contato"><div class="wrap">
+  <span>© 2026 M&amp;M Doce Estouro</span>
+  <span>WhatsApp <a href="https://wa.me/5511910088330">(11) 91008-8330</a> · Taboão da Serra, SP</span>
+</div></footer>
+
+<script src="app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* Para colocar foto em qualquer item, adicione o campo img com o caminho do arquivo.
+   Ex.: img:'fotos/brigadeiro-morango.jpg'. Sem img (ou se a foto não carregar), aparece a bolinha colorida. */
+var MENU = [
+  {id:'pavetone', name:'Pavetone', sub:'Preço por unidade.', items:[
+    {n:'Tradicional 1,1kg', d:'Ganache de chocolate ao leite e creme branco', p:115, c:'#5a3025'}
+    // {n:'Morango', d:'Cremoso, com pedaços da fruta', p:4, c:'#f48fb1'},
+    // {n:'Ninho', d:'Leite em pó e cobertura de coco', p:4, c:'#f6e3c4'},
+    // {n:'Pistache', d:'Pasta de pistache e castanhas', p:5, c:'#b9d79a'},
+    // {n:'Maracujá', d:'Doce e levemente azedinho', p:4, c:'#f2b84b'},
+    // {n:'Beijinho', d:'Coco queimado e cravo', p:3.5, c:'#fff1d6'}
+  ]},
+  {id:'chocotone', name:'Chocotone Trufado', sub:'Preço por unidade.', items:[
+    {n:'Brigadeiro 800g', d:'Recheio de brigadeiro com cobertura de chocolate', p:90, c:'#5a3025'},
+    {n:'Ninho 800g', d:'Recheio de ninho com cobertura de chocolate', p:90, c:'#5a3025'}
+    // {n:'Morango', d:'Cremoso, com pedaços da fruta', p:4, c:'#f48fb1'},
+    // {n:'Ninho', d:'Leite em pó e cobertura de coco', p:4, c:'#f6e3c4'},
+    // {n:'Pistache', d:'Pasta de pistache e castanhas', p:5, c:'#b9d79a'},
+    // {n:'Maracujá', d:'Doce e levemente azedinho', p:4, c:'#f2b84b'},
+    // {n:'Beijinho', d:'Coco queimado e cravo', p:3.5, c:'#fff1d6'}
+  ]},
+  {id:'minibolo', name:'Minibolo', sub:'Preço por unidade.', items:[
+    {n:'Tradicional', d:'Casquinha de chocolate e bolo de chocolate com ganache de brigadeiro', p:8, c:'#5a3025', img:'fotos/minibolo/minibolo-tradicional.png'},
+    {n:'Cenoura', d:'Casquinha de chocolate e bolo de Cenoura com ganache de brigadeiro', p:8, c:'#f48fb1', img:'fotos/minibolo/minibolo-tradicional.png'},
+    {n:'Ninho', d:'Casquinha de chocolate e bolo de baunilha com ganache de chocolate ao leite', p:8, c:'#f6e3c4', img:'fotos/minibolo/minibolo-tradicional.png'},
+    {n:'Prestígio', d:'Casquinha de chocolate e bolo de coco com ganache de chocolate ao leite', p:8, c:'#b9d79a', img:'fotos/minibolo/minibolo-tradicional.png'}
+  ]},
+  {id:'cones', name:'Cones recheados', sub:'Preço por unidade.', items:[
+    {n:'Cone de Pistache', d:'Recheio de pistache', p:7, c:'#b9d79a', img:'fotos/minibolo/minibolo-tradicional.png'},
+    {n:'Cone de Chocolate', d:'Ganache meio amargo', p:6, c:'#5a3025'},
+    {n:'Cone de Morango', d:'Creme de morango e leite ninho', p:6, c:'#f48fb1'},
+    {n:'Cone de Prestígio', d:'Com coco ralado e ganache de chocolate', p:8, c:'#8a5a3c'},
+    {n:'Cone de Meio Amargo', d:'Com creme de chocolate', p:8, c:'#8a5a3c'},
+    {n:'Cone de Maracujá', d:'Com mousse de maracujá', p:8, c:'#8a5a3c'}
+  ]},
+  {id:'barraChocolate', name:'Barra de Chocolate', sub:'Preço por unidade.', items:[
+    {n:'Barra ao Leite', d:'Creme de chocolate ao Leite', p:42, c:'#f2b84b'},
+    {n:'Barra de Prestígio', d:'Ganache de chocolate e prestígio', p:42, c:'#e11d63'},
+    {n:'Barra de Ninho', d:'Creme de ninho', p:42, c:'#8a2b4a'}
+  ]},
+  {id:'caixas', name:'Caixas presente', sub:'Embalagem especial para presentear.', items:[
+    {n:'Caixa com 4', d:'Sabores à escolha', p:18, c:'#f2b84b'},
+    {n:'Caixa com 9', d:'Sabores variados', p:38, c:'#e11d63'},
+    {n:'Caixa com 16', d:'Ideal para dividir', p:64, c:'#8a2b4a'}
+  ]},
+  // {id:'bebidas', name:'Bebidas', sub:'Para acompanhar.', items:[
+  //   {n:'Chocolate quente', d:'300 ml, cremoso', p:12, c:'#4a2a20'},
+  //   {n:'Café coado', d:'200 ml', p:6, c:'#7a4a35'},
+  //   {n:'Suco natural', d:'300 ml, sabor do dia', p:9, c:'#fbbf24'}
+  // ]}
+];
+
+/* Nome único para cada item (evita misturar "Tradicional" do brigadeiro com o do minibolo) */
+MENU.forEach(function(c){
+  c.items.forEach(function(it){ it.k = c.name + ' · ' + it.n; });
+});
+
+var brl = function(v){ return 'R$ ' + v.toFixed(2).replace('.', ','); };
+var qty = 0, sum = 0, active = 'todos';
+var menu = document.getElementById('menu'), tabs = document.getElementById('tabs');
+
+/* Foto do item, ou bolinha colorida se não tiver foto / a foto não carregar */
+function thumb(it){
+  return it.img
+    ? '<img src="' + it.img + '" alt="' + it.n + '" data-c="' + it.c + '" loading="lazy" onerror="imgFail(this)">'
+    : '<i style="background:' + it.c + '"></i>';
+}
+function imgFail(img){
+  img.onerror = null;
+  var i = document.createElement('i');
+  i.style.background = img.getAttribute('data-c');
+  img.replaceWith(i);
+}
+
+function renderTabs(){
+  var all = [{id:'todos', name:'Todos'}].concat(MENU);
+  tabs.innerHTML = '';
+  all.forEach(function(c){
+    var b = document.createElement('button');
+    b.className = 'tab'; b.type = 'button'; b.textContent = c.name;
+    b.setAttribute('aria-pressed', c.id === active);
+    b.onclick = function(){
+      active = c.id;
+      [].forEach.call(tabs.children, function(x){ x.setAttribute('aria-pressed', x === b); });
+      renderMenu();
+      b.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+    };
+    tabs.appendChild(b);
+  });
+}
+
+function renderMenu(){
+  menu.innerHTML = '';
+  MENU.filter(function(c){ return active === 'todos' || c.id === active; }).forEach(function(c){
+    var s = document.createElement('section');
+    s.className = 'cat';
+    s.innerHTML = '<h2>' + c.name + '</h2><p class="sub">' + c.sub + '</p><div class="list"></div>';
+    var list = s.querySelector('.list');
+    c.items.forEach(function(it){
+      var a = document.createElement('article');
+      a.className = 'item';
+      a.innerHTML = '<div class="dot">' + thumb(it) + '</div>' +
+        '<div class="info"><h3>' + it.n + '</h3><p>' + it.d + '</p><span class="price">' + brl(it.p) + '</span></div>' +
+        '<button class="add" aria-label="Adicionar ' + it.n + '">+</button>';
+      a.querySelector('.add').onclick = function(){ addItem(it); };
+      list.appendChild(a);
+    });
+    menu.appendChild(s);
+  });
+}
+
+/* Pix "copia e cola" (BR Code) com valor */
+var PIX_KEY = '+5511910088330', PIX_SHOW = '(11) 91008-8330', PIX_NAME = 'MM DOCE ESTOURO', PIX_CITY = 'TABOAO DA SERRA';
+function tlv(id, v){ return id + ('0' + v.length).slice(-2) + v; }
+function crc16(s){
+  var c = 0xFFFF;
+  for (var i = 0; i < s.length; i++){
+    c ^= s.charCodeAt(i) << 8;
+    for (var j = 0; j < 8; j++) c = (c & 0x8000) ? ((c << 1) ^ 0x1021) & 0xFFFF : (c << 1) & 0xFFFF;
+  }
+  return ('000' + c.toString(16).toUpperCase()).slice(-4);
+}
+function pixCode(valor){
+  var p = tlv('00','01') + tlv('01','11') +
+    tlv('26', tlv('00','br.gov.bcb.pix') + tlv('01', PIX_KEY)) +
+    tlv('52','0000') + tlv('53','986') +
+    (valor > 0 ? tlv('54', valor.toFixed(2)) : '') +
+    tlv('58','BR') + tlv('59', PIX_NAME) + tlv('60', PIX_CITY) + tlv('62', tlv('05','***')) + '6304';
+  return p + crc16(p);
+}
+var pixText = '', qrObj = null, lastCode = '';
+var bag = {}, mode = 'ret', pay = 'pix', FEE = 8, PHONE = '5511910088330';
+var $ = function(id){ return document.getElementById(id); };
+
+function addItem(it){ bag[it.k] = bag[it.k] || {it: it, q: 0}; bag[it.k].q++; update(); }
+function change(k, d){ bag[k].q += d; if (bag[k].q <= 0) delete bag[k]; update(); }
+function openCart(o){ $('drawer').classList.toggle('open', o); $('ov').classList.toggle('open', o); document.body.classList.toggle('lock', o); }
+
+function update(){
+  var keys = Object.keys(bag); qty = 0; sum = 0;
+  keys.forEach(function(k){ qty += bag[k].q; sum += bag[k].q * bag[k].it.p; });
+  var fee = (mode === 'ent' && qty > 0) ? FEE : 0, total = sum + fee;
+
+  $('cart').textContent = 'Carrinho (' + qty + ')'; try{localStorage.setItem('mm_n', qty);}catch(e){}
+  $('totalText').textContent = qty + (qty === 1 ? ' item' : ' itens') + ' · ' + brl(sum);
+  $('total').classList.toggle('show', qty > 0 && !$('drawer').classList.contains('open'));
+
+  var lines = $('lines'); lines.innerHTML = '';
+  if (!keys.length) { lines.innerHTML = '<p class="empty">Seu carrinho está vazio.<br>Escolha alguns doces no cardápio.</p>'; }
+  keys.forEach(function(k){
+    var l = bag[k], d = document.createElement('div');
+    d.className = 'line';
+    d.innerHTML = '<div class="dot">' + thumb(l.it) + '</div>' +
+      '<div class="info"><h3>' + l.it.k + '</h3><p>' + brl(l.it.p * l.q) + '</p></div>' +
+      '<div class="qty"><button aria-label="Diminuir">&minus;</button><span>' + l.q + '</span><button aria-label="Aumentar">+</button></div>';
+    var b = d.querySelectorAll('button');
+    b[0].onclick = function(){ change(k, -1); };
+    b[1].onclick = function(){ change(k, 1); };
+    lines.appendChild(d);
+  });
+
+  $('mRet').setAttribute('aria-pressed', mode === 'ret');
+  $('mEnt').setAttribute('aria-pressed', mode === 'ent');
+  $('pPix').setAttribute('aria-pressed', pay === 'pix');
+  $('pLoc').setAttribute('aria-pressed', pay === 'loc');
+  $('pix').style.display = pay === 'pix' ? '' : 'none';
+  $('pixKey').textContent = PIX_SHOW;
+  if (pay === 'pix' && keys.length) {
+    pixText = pixCode(total);
+    $('pixVal').textContent = 'Valor: ' + brl(total);
+    if (pixText !== lastCode && typeof QRCode !== 'undefined') {
+      lastCode = pixText; $('qr').innerHTML = '';
+      try { qrObj = new QRCode($('qr'), {text: pixText, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M}); } catch(e) {}
+    }
+    $('qr').style.display = typeof QRCode !== 'undefined' ? '' : 'none';
+  }
+  $('foot').style.display = keys.length ? '' : 'none';
+  $('sSub').textContent = brl(sum);
+  $('sFee').textContent = fee ? brl(fee) : 'Grátis';
+  $('sTot').textContent = brl(total);
+
+  var nome = $('cname').value.trim();
+  var txt = 'Olá! Meu nome é ' + (nome || '(nome)') + ' e gostaria de fazer um pedido:\n' +
+    keys.map(function(k){ return '- ' + bag[k].q + 'x ' + k + ' (' + brl(bag[k].it.p * bag[k].q) + ')'; }).join('\n') +
+    '\n\n' + (mode === 'ent' ? 'Entrega' : 'Retirada') + '\nPagamento: ' + (pay === 'pix' ? 'Pix (envio o comprovante em seguida)' : 'na ' + (mode === 'ent' ? 'entrega' : 'retirada')) + '\nTotal: ' + brl(total);
+  $('go').href = 'https://wa.me/' + PHONE + '?text=' + encodeURIComponent(txt);
+  $('go').classList.toggle('off', !keys.length || !nome);
+}
+
+$('cart').onclick = function(e){ e.preventDefault(); openCart(true); update(); };
+$('order').onclick = function(){ openCart(true); update(); };
+$('close').onclick = $('ov').onclick = function(){ openCart(false); update(); };
+$('mRet').onclick = function(){ mode = 'ret'; update(); };
+$('mEnt').onclick = function(){ mode = 'ent'; update(); };
+$('pPix').onclick = function(){ pay = 'pix'; update(); };
+$('pLoc').onclick = function(){ pay = 'loc'; update(); };
+$('copy').onclick = function(){
+  var b = this, ok = function(){ b.textContent = 'Código copiado!'; setTimeout(function(){ b.textContent = 'Copiar código Pix (copia e cola)'; }, 2000); };
+  if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(pixText).then(ok); return; }
+  var t = document.createElement('textarea'); t.value = pixText; t.style.position = 'fixed'; t.style.opacity = '0';
+  document.body.appendChild(t); t.select(); try{ document.execCommand('copy'); ok(); }catch(e){} t.remove();
+};
+$('cname').oninput = update;
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { openCart(false); update(); } });
+update();
+renderTabs(); renderMenu();
+</script>
+</body>
+</html>
