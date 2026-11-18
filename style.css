@@ -174,3 +174,34 @@ body.lock{overflow:hidden}
 .qr{justify-self:center;background:#fff;padding:10px;border:var(--st);border-radius:16px;line-height:0}
 .qr canvas{display:block}
 .pix small b{display:inline;font-size:inherit;color:var(--ch)}
+
+/* ===== carrinho: minimizar itens + gerar QR ===== */
+.itb{display:flex;justify-content:space-between;align-items:center;width:100%;padding:12px 22px;border:0;border-bottom:var(--st);background:var(--w);color:var(--ch);font:inherit;font-weight:800;cursor:pointer;text-align:left}
+.itb:hover{background:var(--pl)}
+.itb i{width:10px;height:10px;margin-top:4px;border-right:3px solid var(--ch);border-bottom:3px solid var(--ch);transform:rotate(-135deg);transition:transform .25s}
+.itb[aria-expanded="false"] i{transform:rotate(45deg);margin-top:-4px}
+.drawer.min .foot{max-height:none;flex:1}
+.pixbtns{display:flex;gap:8px;flex-wrap:wrap}
+.pix .copy.alt{background:var(--w)}
+.qr[hidden]{display:none}
+.qr{animation:pop .3s cubic-bezier(.2,.9,.3,1.3)}
+@keyframes pop{from{opacity:0;transform:scale(.85)}}
+
+/* ===== transição entre telas ===== */
+body::after{content:"M&M";position:fixed;inset:0;z-index:100;pointer-events:none;display:grid;place-items:center;
+  background:var(--pk);color:var(--bt);font-family:"Bagel Fat One",Georgia,serif;font-size:clamp(3.5rem,16vw,8rem);text-shadow:5px 5px 0 var(--ch);
+  transform:translateX(100%);animation:cOut .6s cubic-bezier(.77,0,.18,1) both}
+html.leaving body::after{animation:cIn .38s cubic-bezier(.77,0,.18,1) both}
+@keyframes cOut{from{transform:translateX(0)}to{transform:translateX(100%)}}
+@keyframes cIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+main{animation:rise .6s .25s backwards}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+/* Com "reduzir movimento" ligado no aparelho: em vez de cortina, um fade suave */
+@media (prefers-reduced-motion:reduce){
+  body::after,html.leaving body::after{content:"";background:var(--bg);transform:none;text-shadow:none}
+  body::after{animation:fOut .35s both}
+  html.leaving body::after{animation:fIn .25s both}
+  main{animation:none}
+}
+@keyframes fOut{from{opacity:1}to{opacity:0}}
+@keyframes fIn{from{opacity:0}to{opacity:1}}
