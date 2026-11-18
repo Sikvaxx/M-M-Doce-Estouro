@@ -28,6 +28,7 @@
 <div class="ov" id="ov"></div>
 <aside class="drawer" id="drawer" aria-label="Carrinho">
   <div class="dh"><h2>Seu carrinho</h2><button class="x" id="close" aria-label="Fechar carrinho">&#10005;</button></div>
+  <button class="itb" id="itb" type="button" aria-expanded="true" aria-controls="lines"><span id="itbText">Itens do pedido</span><i aria-hidden="true"></i></button>
   <div class="lines" id="lines"></div>
   <div class="foot" id="foot">
     <div class="opts">
@@ -40,9 +41,12 @@
     </div>
     <div class="pix" id="pix">
       <span>Pague com Pix</span>
-      <div class="qr" id="qr"></div>
       <b id="pixVal"></b>
-      <button class="copy" id="copy" type="button">Copiar código Pix (copia e cola)</button>
+      <div class="pixbtns">
+        <button class="copy" id="genqr" type="button" aria-expanded="false" aria-controls="qr">Gerar QR Code</button>
+        <button class="copy alt" id="copy" type="button">Copiar código Pix</button>
+      </div>
+      <div class="qr" id="qr" hidden></div>
       <small>Ou use a chave de telefone <b id="pixKey"></b>. Depois de pagar, envie o comprovante pelo WhatsApp.</small>
     </div>
     <input id="cname" type="text" placeholder="Seu nome" autocomplete="name">
@@ -70,7 +74,7 @@
    Ex.: img:'fotos/brigadeiro-morango.jpg'. Sem img (ou se a foto não carregar), aparece a bolinha colorida. */
 var MENU = [
   {id:'pavetone', name:'Pavetone', sub:'Preço por unidade.', items:[
-    {n:'Tradicional 1,1kg', d:'Ganache de chocolate ao leite e creme branco', p:115, c:'#5a3025'}
+    {n:'Tradicional 1,1kg', d:'Ganache de chocolate ao leite e creme branco', p:115, c:'#5a3025', img:''}
     // {n:'Morango', d:'Cremoso, com pedaços da fruta', p:4, c:'#f48fb1'},
     // {n:'Ninho', d:'Leite em pó e cobertura de coco', p:4, c:'#f6e3c4'},
     // {n:'Pistache', d:'Pasta de pistache e castanhas', p:5, c:'#b9d79a'},
@@ -87,8 +91,8 @@ var MENU = [
     // {n:'Beijinho', d:'Coco queimado e cravo', p:3.5, c:'#fff1d6'}
   ]},
   {id:'minibolo', name:'Minibolo', sub:'Preço por unidade.', items:[
-    {n:'Tradicional', d:'Casquinha de chocolate e bolo de chocolate com ganache de brigadeiro', p:8, c:'#5a3025', img:'fotos/minibolo/minibolo-tradicional.png'},
-    {n:'Cenoura', d:'Casquinha de chocolate e bolo de Cenoura com ganache de brigadeiro', p:8, c:'#f48fb1', img:'fotos/minibolo/minibolo-tradicional.png'},
+    {n:'Tradicional', d:'Casquinha de chocolate e bolo de chocolate com ganache de brigadeiro', p:8, c:'#5a3025', img:'minibolo/minibolo-tradicional.png'},
+    {n:'Cenoura', d:'Casquinha de chocolate e bolo de Cenoura com ganache de brigadeiro', p:8, c:'#f48fb1', img:'minibolo/minibolo-cenoura.png'},
     {n:'Ninho', d:'Casquinha de chocolate e bolo de baunilha com ganache de chocolate ao leite', p:8, c:'#f6e3c4', img:'fotos/minibolo/minibolo-tradicional.png'},
     {n:'Prestígio', d:'Casquinha de chocolate e bolo de coco com ganache de chocolate ao leite', p:8, c:'#b9d79a', img:'fotos/minibolo/minibolo-tradicional.png'}
   ]},
@@ -195,7 +199,11 @@ function pixCode(valor){
     tlv('58','BR') + tlv('59', PIX_NAME) + tlv('60', PIX_CITY) + tlv('62', tlv('05','***')) + '6304';
   return p + crc16(p);
 }
-var pixText = '', qrObj = null, lastCode = '';
+var pixText = '', qrObj = null, lastCode = '', qrShown = false, itemsOpen = true;
+function drawQR(){
+  lastCode = pixText; $('qr').innerHTML = '';
+  try { qrObj = new QRCode($('qr'), {text: pixText, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M}); } catch(e) {}
+}
 var bag = {}, mode = 'ret', pay = 'pix', FEE = 8, PHONE = '5511910088330';
 var $ = function(id){ return document.getElementById(id); };
 
@@ -207,6 +215,14 @@ function update(){
   var keys = Object.keys(bag); qty = 0; sum = 0;
   keys.forEach(function(k){ qty += bag[k].q; sum += bag[k].q * bag[k].it.p; });
   var fee = (mode === 'ent' && qty > 0) ? FEE : 0, total = sum + fee;
+
+  /* minimizar / maximizar a lista de itens */
+  var min = keys.length > 0 && !itemsOpen;
+  $('itb').style.display = keys.length ? '' : 'none';
+  $('itb').setAttribute('aria-expanded', !min);
+  $('itbText').textContent = 'Itens do pedido (' + qty + ')';
+  $('lines').hidden = min;
+  $('drawer').classList.toggle('min', min);
 
   $('cart').textContent = 'Carrinho (' + qty + ')'; try{localStorage.setItem('mm_n', qty);}catch(e){}
   $('totalText').textContent = qty + (qty === 1 ? ' item' : ' itens') + ' · ' + brl(sum);
@@ -232,15 +248,15 @@ function update(){
   $('pLoc').setAttribute('aria-pressed', pay === 'loc');
   $('pix').style.display = pay === 'pix' ? '' : 'none';
   $('pixKey').textContent = PIX_SHOW;
+  if (!keys.length || pay !== 'pix') qrShown = false;
   if (pay === 'pix' && keys.length) {
     pixText = pixCode(total);
     $('pixVal').textContent = 'Valor: ' + brl(total);
-    if (pixText !== lastCode && typeof QRCode !== 'undefined') {
-      lastCode = pixText; $('qr').innerHTML = '';
-      try { qrObj = new QRCode($('qr'), {text: pixText, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M}); } catch(e) {}
-    }
-    $('qr').style.display = typeof QRCode !== 'undefined' ? '' : 'none';
+    if (qrShown && pixText !== lastCode) drawQR(); /* valor mudou: atualiza o QR */
   }
+  $('qr').hidden = !qrShown;
+  $('genqr').textContent = qrShown ? 'Ocultar QR Code' : 'Gerar QR Code';
+  $('genqr').setAttribute('aria-expanded', qrShown);
   $('foot').style.display = keys.length ? '' : 'none';
   $('sSub').textContent = brl(sum);
   $('sFee').textContent = fee ? brl(fee) : 'Grátis';
@@ -262,10 +278,17 @@ $('mEnt').onclick = function(){ mode = 'ent'; update(); };
 $('pPix').onclick = function(){ pay = 'pix'; update(); };
 $('pLoc').onclick = function(){ pay = 'loc'; update(); };
 $('copy').onclick = function(){
-  var b = this, ok = function(){ b.textContent = 'Código copiado!'; setTimeout(function(){ b.textContent = 'Copiar código Pix (copia e cola)'; }, 2000); };
+  var b = this, ok = function(){ b.textContent = 'Código copiado!'; setTimeout(function(){ b.textContent = 'Copiar código Pix'; }, 2000); };
   if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(pixText).then(ok); return; }
   var t = document.createElement('textarea'); t.value = pixText; t.style.position = 'fixed'; t.style.opacity = '0';
   document.body.appendChild(t); t.select(); try{ document.execCommand('copy'); ok(); }catch(e){} t.remove();
+};
+$('itb').onclick = function(){ itemsOpen = !itemsOpen; update(); };
+$('genqr').onclick = function(){
+  if (!qrShown && typeof QRCode === 'undefined') { this.textContent = 'QR indisponível, copie o código'; return; }
+  qrShown = !qrShown;
+  if (qrShown) drawQR();
+  update();
 };
 $('cname').oninput = update;
 document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { openCart(false); update(); } });
