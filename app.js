@@ -25,3 +25,18 @@
   car.onmouseenter=car.onfocusin=stop; car.onmouseleave=car.onfocusout=play;
   mark(); play();
 })();
+
+/* Transição entre telas: cortina rosa antes de abrir outra página */
+(function(){
+  var h=document.documentElement;
+  addEventListener('pageshow',function(e){ if(e.persisted) h.classList.remove('leaving'); });
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a[href]');
+    if(!a||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey) return;
+    if(a.target&&a.target!=='_self') return;
+    var u=new URL(a.href,location.href);
+    if(u.origin!==location.origin||(u.pathname===location.pathname&&u.search===location.search)) return;
+    e.preventDefault(); h.classList.add('leaving');
+    setTimeout(function(){ location.href=a.href; },matchMedia('(prefers-reduced-motion:reduce)').matches?260:400);
+  });
+})();
